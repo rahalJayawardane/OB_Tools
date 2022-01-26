@@ -1,0 +1,37 @@
+#
+# OPENSSL CSR REQUEST CONFIGURATION FILE
+# ======================================
+#
+# <TYPE> qualified client certificate request with PSD2 role: <ROLES>
+# -------------------------------------------------------------------------
+# See latest specification: ETSI TS 119 495 V1.2.1 (2018-11)
+# https://www.etsi.org/deliver/etsi_ts/119400_119499/119495/01.02.01_60/ts_119495v010201p.pdf
+#
+oid_section             = new_oids
+[ new_oids ]
+organizationIdentifier  = "2.5.4.97"
+
+[ req ]
+default_bits            = 2048                                                      # RSA key size
+encrypt_key             = yes                                                       # Protect private key: yes or no. yes recommended
+default_md              = sha256                                                    # MD to use. sha256 recommended
+utf8                    = yes                                                       # Input is UTF-8.
+string_mask             = utf8only                                                  # Emit UTF-8 strings
+prompt                  = no                                                        # Prompt for DN. yes or no.
+distinguished_name      = client_dn                                                 # DN template. Mandatory to include organizationIdentifier
+req_extensions          = client_reqext                                             # Desired extensions. Mandatory to include PSD2 QCStatements
+
+[ client_dn ]
+countryName             = "<COUN>"                                                  # Country code - see doc above
+organizationName        = "<ORG>"                                                   # Organizational name
+
+organizationIdentifier  = "<ORG_ID>"                                                # Must be in format as shown above
+commonName              = "<CN>"                                                    # Subject common name
+emailAddress            = "<EMAIL>"                                                 # Organisation email contact address
+
+[ client_reqext ]
+keyUsage                = critical,digitalSignature,nonRepudiation                  # Must be critical
+
+subjectKeyIdentifier    = hash
+
+qcStatements            = <STAT>                                                    # set the roles in config.properies file and qcStatement will generate

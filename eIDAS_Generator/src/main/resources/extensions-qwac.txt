@@ -1,0 +1,7 @@
+# x509 extensions QWAC
+[v3_ca]
+keyUsage = critical,digitalSignature # Must be critical
+extendedKeyUsage = clientAuth, serverAuth # Must be defined as shown above
+subjectKeyIdentifier = hash # Hash value to calculate SKI
+qcStatements=<STAT>
+#DER:305b3013060604008e4601063009060704008e4601060330440606040081982702303a301330110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
