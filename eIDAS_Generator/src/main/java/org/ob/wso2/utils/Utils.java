@@ -8,12 +8,16 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 public class Utils {
+
     static PropertyFile properties = PropertyFile.getInstance();
-    static String fileName = "temple.cnf";
+    static String cnfFile = "temple.cnf";
+    static String extFile = "extensions-template.txt";
     static String roles;
     static String qcStatement;
 
-    public static String readFile() throws Exception {
+    public static String readFile(boolean isCNFFile) throws Exception {
+
+        String fileName = (isCNFFile ? cnfFile : extFile);
         InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(fileName);
 
         if (inputStream != null) {
@@ -49,24 +53,30 @@ public class Utils {
         return text;
     }
 
-    public static void writeFile(String text, boolean isQSeal) throws Exception {
+    public static void writeFile(String text, boolean isQSeal, boolean isExtFile) throws Exception {
 
         String fileName;
+        String directoryPath = properties.getOutputLocation() + "/output/";
+        File directory = new File(directoryPath);
 
-        if (isQSeal) {
-            fileName = "open-ssl-config-qseal.cnf";
-        } else {
-            fileName = "open-ssl-config-qwac.cnf";
+        if (! directory.exists()){
+            directory.mkdir();
         }
 
-        File file = new File("./output/" + fileName);
+        if (isQSeal) {
+            fileName = (!isExtFile ? "open-ssl-config-qseal.cnf" : "extensions-qseal.txt");
+        } else {
+            fileName = (!isExtFile ? "open-ssl-config-qwac.cnf" : "extensions-qwac.txt");
+        }
+
+        File file = new File(directoryPath + fileName);
         FileOutputStream fileOutput = new FileOutputStream(file, false);
         byte[] textBytes = text.getBytes();
         fileOutput.write(textBytes);
         fileOutput.close();
     }
 
-    public static void setQSealQCStatement () throws Exception {
+    public static void setQSealQCStatement() throws Exception {
 
         int total = 0;
         total = total + (properties.isPSP_AS() ? 1 : 0);

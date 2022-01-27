@@ -1,32 +1,34 @@
 package org.ob.wso2.tpp;
 
+import org.ob.wso2.utils.PropertyFile;
 import org.ob.wso2.utils.Utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Create TPP CSR
  */
 public class GenerateQSEALCSR {
     String cnfFile;
+    String outputFolder = PropertyFile.getInstance().getOutputLocation() + "/output/";
 
     public GenerateQSEALCSR() throws Exception {
         writeCNFFile();
-        runCommand();
+        execCommands();
     }
 
-    private void runCommand() throws IOException, InterruptedException {
+    private void execCommands() throws IOException, InterruptedException {
+
         Runtime runtime = Runtime.getRuntime();
-        runtime.exec("openssl req -new -config ./output/open-ssl-config-qseal.cnf -out ./output/qseal.csr " +
-                "-keyout ./output/qseal.key -sha256 -passout pass:wso2carbon");
-        runtime.exec("openssl rsa -in ./output/qseal.key -out ./output/qseal_decrypt.key -passin " +
-                "pass:wso2carbon");
+        runtime.exec("openssl req -new -config " + outputFolder + "open-ssl-config-qseal.cnf -out "
+                + outputFolder + "qseal.csr -keyout " + outputFolder + "qseal.key -sha256 -passout pass:wso2carbon");
+
+        runtime.exec("openssl rsa -in " + outputFolder + "qseal.key -out " + outputFolder + "qseal_decrypt.key" +
+                " -passin pass:wso2carbon");
     }
 
     private void writeCNFFile() throws Exception {
-        cnfFile = Utils.readFile();
-        Utils.writeFile(Utils.replaceProperties(cnfFile, true), true);
+        cnfFile = Utils.readFile(true);
+        Utils.writeFile(Utils.replaceProperties(cnfFile, true), true, false);
     }
 }

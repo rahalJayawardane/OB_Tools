@@ -1,0 +1,7 @@
+# x509 extensions <TYPE>
+
+[v3_ca]
+keyUsage                = critical,digitalSignature # Must be critical
+extendedKeyUsage        = clientAuth, serverAuth # Must be defined as shown above
+subjectKeyIdentifier    = hash # Hash value to calculate SKI
+qcStatements            = <STAT>

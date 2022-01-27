@@ -15,16 +15,38 @@ public class PropertyFile {
         return property_file;
     }
 
+    private String outputLocation;
+
     private boolean createCA;
     private String countryName;
     private String organizationName;
     private String organizationIdentifier;
     private String commonName;
     private String emailAddress;
+
+    //CA Details
+    private String ca_country;
+    private String ca_locality;
+    private String ca_org;
+    private String ca_state;
+    private String ca_orgUnit;
+    private String ca_commonName;
+
+    //Roles
     private boolean PSP_AS;
     private boolean PSP_PI;
     private boolean PSP_AI;
     private boolean PSP_IC;
+
+    public String getOutputLocation() {
+
+        return outputLocation;
+    }
+
+    public void setOutputLocation(String outputLocation) {
+
+        this.outputLocation = outputLocation;
+    }
 
     public boolean isCreateCA() {
 
@@ -124,5 +146,65 @@ public class PropertyFile {
     public void setPSP_IC(boolean PSP_IC) {
 
         this.PSP_IC = PSP_IC;
+    }
+
+    public String getCa_country() {
+
+        return ca_country;
+    }
+
+    public void setCa_country(String ca_country) {
+
+        this.ca_country = ca_country;
+    }
+
+    public String getCa_locality() {
+
+        return ca_locality;
+    }
+
+    public void setCa_locality(String ca_locality) {
+
+        this.ca_locality = ca_locality;
+    }
+
+    public String getCa_org() {
+
+        return ca_org;
+    }
+
+    public void setCa_org(String ca_org) {
+
+        this.ca_org = ca_org;
+    }
+
+    public String getCa_state() {
+
+        return ca_state;
+    }
+
+    public void setCa_state(String ca_state) {
+
+        this.ca_state = ca_state;
+    }
+
+    public String getCa_orgUnit() {
+
+        return ca_orgUnit;
+    }
+
+    public void setCa_orgUnit(String ca_orgUnit) {
+
+        this.ca_orgUnit = ca_orgUnit;
+    }
+
+    public String getCa_commonName() {
+
+        return ca_commonName;
+    }
+
+    public void setCa_commonName(String ca_commonName) {
+
+        this.ca_commonName = ca_commonName;
     }
 }

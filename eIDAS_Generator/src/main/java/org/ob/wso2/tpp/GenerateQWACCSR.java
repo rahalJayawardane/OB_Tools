@@ -1,5 +1,6 @@
 package org.ob.wso2.tpp;
 
+import org.ob.wso2.utils.PropertyFile;
 import org.ob.wso2.utils.Utils;
 
 import java.io.IOException;
@@ -10,23 +11,27 @@ import java.io.IOException;
 public class GenerateQWACCSR {
 
     String cnfFile;
+    String outputFolder = PropertyFile.getInstance().getOutputLocation() + "/output/";
 
     public GenerateQWACCSR() throws Exception {
+
         writeCNFFile();
-        runCommand();
+        execCommands();
     }
 
-    private void runCommand() throws IOException, InterruptedException {
+    private void execCommands() throws IOException, InterruptedException {
+
         Runtime runtime = Runtime.getRuntime();
-        runtime.exec("openssl req -new -config ./output/open-ssl-config-qwac.cnf -out ./output/qwac.csr " +
-                "-keyout ./output/qwac.key -sha256 -passout pass:wso2carbon");
-        runtime.exec("openssl rsa -in ./output/qwac.key -out ./output/qwac_decrypt.key -passin " +
-                "pass:wso2carbon");
+        runtime.exec("openssl req -new -config " + outputFolder + "open-ssl-config-qwac.cnf -out "
+                + outputFolder + "qwac.csr -keyout " + outputFolder + "qwac.key -sha256 -passout pass:wso2carbon");
+        runtime.exec("openssl rsa -in " + outputFolder + "qwac.key -out " + outputFolder + "qwac_decrypt.key " +
+                "-passin pass:wso2carbon");
     }
 
     private void writeCNFFile() throws Exception {
-        cnfFile = Utils.readFile();
-        Utils.writeFile(Utils.replaceProperties(cnfFile, false), false);
+
+        cnfFile = Utils.readFile(true);
+        Utils.writeFile(Utils.replaceProperties(cnfFile, false), false, false);
     }
 
 }
