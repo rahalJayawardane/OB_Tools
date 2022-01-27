@@ -34,4 +34,5 @@ keyUsage                = critical,digitalSignature,nonRepudiation              
 
 subjectKeyIdentifier    = hash
 
-qcStatements            = <STAT>                                                    # set the roles in config.properies file and qcStatement will generate
+# set the roles in config.properties file and qcStatement will generate
+qcStatements            = <STAT>
