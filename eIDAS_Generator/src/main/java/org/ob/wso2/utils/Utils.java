@@ -10,6 +10,8 @@ import java.io.InputStream;
 public class Utils {
     static PropertyFile properties = PropertyFile.getInstance();
     static String fileName = "temple.cnf";
+    static String roles;
+    static String qcStatement;
 
     public static String readFile() throws Exception {
         InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(fileName);
@@ -26,14 +28,21 @@ public class Utils {
         }
     }
 
-    public static String replaceProperties(String text) throws Exception {
+    public static String replaceProperties(String text, boolean isQseal) throws Exception {
 
+        String type = "QSEAL";
+        if (!isQseal) {
+            type = "QWAC";
+        }
+        setQSealQCStatement();
         text = text.replaceAll("<COUN>", properties.getCountryName());
         text = text.replaceAll("<ORG>", properties.getOrganizationName());
         text = text.replaceAll("<ORG_ID>", properties.getOrganizationIdentifier());
         text = text.replaceAll("<CN>", properties.getCommonName());
         text = text.replaceAll("<EMAIL>", properties.getEmailAddress());
-        text = text.replaceAll("<STAT>", setQSealQCStatement());
+        text = text.replaceAll("<STAT>", qcStatement);
+        text = text.replaceAll("<ROLES>", roles);
+        text = text.replaceAll("<TYPE>", type);
         return text;
     }
 
@@ -54,9 +63,8 @@ public class Utils {
         fileOutput.close();
     }
 
-    public static String setQSealQCStatement () throws Exception {
+    public static void setQSealQCStatement () throws Exception {
 
-        String qcStatement;
         int total = 0;
         total = total + (properties.isPSP_AS() ? 1 : 0);
         total = total + (properties.isPSP_AI() ? 2 : 0);
@@ -68,70 +76,69 @@ public class Utils {
         } else {
             switch (total) {
                 case 1:
-                    // PSP_AS
+                    roles = "PSP_AS";
                     qcStatement = "DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701010c065053505f41530c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 2:
-                    // PSP_AI
+                    roles = "PSP_AI";
                     qcStatement = "DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 3:
-                    // PSP_AS PSP_AI
+                    roles = "PSP_AS PSP_AI";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701010c065053505f41530607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 4:
-                    // PSP_PI
+                    roles = "PSP_PI";
                     qcStatement = "DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701020c065053505f50490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 5:
-                    // PSP_AS PSP_PI
+                    roles = "PSP_AS PSP_PI";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701010c065053505f41530607040081982701020c065053505f50490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 6:
-                    // PSP_PI PSP_AI
+                    roles = "PSP_PI PSP_AI";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701020c065053505f50490607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 7:
-                    // PSP_AS PSP_PI PSP_AI
+                    roles = "PSP_AS PSP_PI PSP_AI";
                     qcStatement = "DER:307d3013060604008e4601063009060704008e4601060230660606040081982702305c303530330607040081982701010c065053505f4153060701940081982701020c065053505f50490607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 8:
-                    // PSP_IC
+                    roles = "PSP_IC";
                     qcStatement = "DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 9:
-                    // PSP_AS PSP_IC
+                    roles = "PSP_AS PSP_IC";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701010c065053505f41530607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 10:
-                    // PSP_AI PSP_IC
+                    roles = "PSP_AI PSP_IC";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701030c065053505f41490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 11:
-                    // PSP_AS PSP_AI PSP_IC
+                    roles = "PSP_AS PSP_AI PSP_IC";
                     qcStatement = "DER:307d3013060604008e4601063009060704008e4601060230660606040081982702305c303530330607040081982701010c065053505f41530607040081982701030c065053505f41490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 12:
-                    // PSP_PI PSP_IC
+                    roles = "PSP_PI PSP_IC";
                     qcStatement = "DER:306c3013060604008e4601063009060704008e4601060230550606040081982702304b302430220607040081982701020c065053505f50490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 13:
-                    // PSP_AS PSP_PI PSP_IC
+                    roles = "PSP_AS PSP_PI PSP_IC";
                     qcStatement = "DER:307d3013060604008e4601063009060704008e4601060230660606040081982702305c303530330607040081982701010c065053505f41530607040081982701020c065053505f50490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 14:
-                    // PSP_PI PSP_AI PSP_IC
+                    roles = "PSP_PI PSP_AI PSP_IC";
                     qcStatement = "DER:307d3013060604008e4601063009060704008e4601060230660606040081982702305c303530330607040081982701020c065053505f50490607040081982701030c065053505f41490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 case 15:
-                    // PSP_AS PSP_PI PSP_AI PSP_IC
+                    roles = "PSP_AS PSP_PI PSP_AI PSP_IC";
                     qcStatement = "DER:30818e3013060604008e4601063009060704008e4601060230770606040081982702306d304630440607040081982701010c065053505f41530607040081982701020c065053505f50490607040081982701030c065053505f41490607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341";
                     break;
                 default:
                     throw new Exception("Undefined Roles selection");
             }
         }
-        return qcStatement;
     }
 
 }

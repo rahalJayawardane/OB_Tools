@@ -10,7 +10,6 @@ public class Generate {
         ConfigFileReader file = new ConfigFileReader();
         file.getPropValues();
         PropertyFile properties = PropertyFile.getInstance();
-        System.out.println(properties.getCountryName());
         GenerateQSEALCSR QSeal =  new GenerateQSEALCSR();
     }
 }
