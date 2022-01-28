@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Built-By: Rahal Jayawardane
+Build-Jdk: 1.8
+Main-Class: org.ob.wso2.validateCertificate
