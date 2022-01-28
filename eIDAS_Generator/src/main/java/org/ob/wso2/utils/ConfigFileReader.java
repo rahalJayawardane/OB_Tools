@@ -24,14 +24,6 @@ public class ConfigFileReader {
                 throw new FileNotFoundException(fileName + "' is not a correct property file");
             }
 
-            String output = prop.getProperty("output");
-
-            if (output.endsWith("/")) {
-                properties.setOutputLocation(output.substring(0, output.length() - 2));
-            } else {
-                properties.setOutputLocation(prop.getProperty("output"));
-            }
-
             properties.setCreateCA(Boolean.parseBoolean(prop.getProperty("createCA")));
             properties.setCountryName(prop.getProperty("countryName"));
             properties.setOrganizationName(prop.getProperty("organizationName"));

@@ -42,7 +42,7 @@ public class Generate {
         }
 
         PropertyFile properties = PropertyFile.getInstance();
-
+        properties.setOutputLocation(fileLocation.split("/config.properties")[0]);
         // Generate QSEAL CSR
         System.out.println("Creating QSeal CSR...");
         new GenerateQSEALCSR();
