@@ -3,6 +3,7 @@ package org.ob.wso2.tpp;
 import org.ob.wso2.utils.PropertyFile;
 import org.ob.wso2.utils.Utils;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import java.io.InputStreamReader;
 public class SignCA {
 
     String outputFolder = PropertyFile.getInstance().getOutputLocation() + "/output/";
+    Process process;
 
     public SignCA() throws Exception{
         createExtFiles();
@@ -44,9 +46,17 @@ public class SignCA {
                 "-extfile " + outputFolder + "extensions-qseal.txt -passin pass:wso2carbon";
 
         // signing QWAC
-        runtime.exec(cmdWAC);
+        Process process = runtime.exec(cmdWAC);
+        process.waitFor();
+//
+//        BufferedReader lineReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//        lineReader.lines().forEach(System.out::println);
+//
+//        BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+//        errorReader.lines().forEach(System.out::println);
 
         // signing QSeal
-        runtime.exec(cmdSeal);
+        process = runtime.exec(cmdSeal);
+        process.waitFor();
     }
 }
