@@ -10,7 +10,7 @@
  * with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.common.util;
+package org.ob.wso2.util;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -30,21 +30,11 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import com.wso2.finance.open.banking.common.config.uk.UKSpecConfigParser;
-import com.wso2.finance.open.banking.common.exception.OpenBankingException;
-import com.wso2.finance.open.banking.common.identity.IdentityConstants;
-import com.wso2.finance.open.banking.common.identity.ServiceProviderRetiriever;
-import com.wso2.finance.open.banking.common.identity.retirevers.ServerIdentityRetriever;
-import com.wso2.finance.open.banking.common.identity.retirevers.sp.ServiceProviderRetrieverFactory;
+import groovy.json.internal.Exceptions;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
-import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -80,7 +70,7 @@ public class JWTUtils {
      * @return json object containing requested jwt part
      */
     public static JSONObject decodeRequestJWT(String jwtToken, JwtPart jwtPart)
-            throws OpenBankingException {
+            throws Exception {
         Optional<JSONObject> jsonObject = Optional.empty();
 
         try {
@@ -93,9 +83,9 @@ public class JWTUtils {
             }
         } catch (ParseException e) {
             log.error("Error occurred while parsing the jwt token");
-            throw new OpenBankingException("Error occurred while parsing the jwt token", e);
+            throw new Exception("Error occurred while parsing the jwt token", e);
         }
-        return jsonObject.orElseThrow(() -> new OpenBankingException(
+        return jsonObject.orElseThrow(() -> new Exceptions.JsonInternalException(
                 "Error occurred while parsing the jwt token"));
     }
 
@@ -108,7 +98,7 @@ public class JWTUtils {
      * @return true if signature is valid
      */
     public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm,
-                                               UKSpecConfigParser parser)
+                                               CommonParser parser)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
         int defaultConnectionTimeout = 3000;
@@ -119,8 +109,8 @@ public class JWTUtils {
         Map<String, RemoteJWKSet<SecurityContext>> jwkSourceMap = new ConcurrentHashMap<>();
         RemoteJWKSet<SecurityContext> jwkSet = jwkSourceMap.get(jwksUri);
         if (jwkSet == null) {
-            int connectionTimeout = Integer.parseInt(parser.getConnectionTimeout());
-            int readTimeout = Integer.parseInt(parser.getReadTimeout());
+            int connectionTimeout = parser.getConnectionTimeOut();
+            int readTimeout = parser.getReadTimeout();
             int sizeLimit = RemoteJWKSet.DEFAULT_HTTP_SIZE_LIMIT;
             if (connectionTimeout == 0 && readTimeout == 0) {
                 connectionTimeout = defaultConnectionTimeout;
@@ -142,87 +132,5 @@ public class JWTUtils {
         SimpleSecurityContext securityContext = new SimpleSecurityContext();
         jwtProcessor.process((SignedJWT) jwt, securityContext);
         return true;
-    }
-
-    /**
-     * Get signed JWT for payload.
-     *
-     * @param payloadJsonObject payload as a JSON object
-     * @param signatureAlgorithm JWT signing algorithm
-     * @return signed JWT.
-     * @throws OpenBankingException on signing exception.
-     */
-    public static String generateJWTFromJSON(org.json.JSONObject payloadJsonObject,
-                                             JWSAlgorithm signatureAlgorithm, String clientId)
-            throws OpenBankingException {
-
-        JWSAlgorithm signAlgorithm = signatureAlgorithm == null ? DEFAULT_ALGORITHM : signatureAlgorithm;
-        String payload = payloadJsonObject.toString();
-        Optional<String> certAlias = IdentityConstants.PRIMARY_SIGNING_CERT_ALIAS;
-        Optional<Key> key = Optional.empty();
-        JWSHeader.Builder headerBuilder = new JWSHeader.Builder(signAlgorithm);
-        X509Certificate certificate = null;
-
-        try {
-            ServiceProviderRetiriever serviceProviderRetrieverInstance =
-                    new ServiceProviderRetrieverFactory().getServiceProviderRetriever();
-
-            OAuthAdminServiceStub oAuthAdminServiceStub =
-                    serviceProviderRetrieverInstance.getOauthAdminServiceStub();
-            if (oAuthAdminServiceStub != null) {
-                OAuthConsumerAppDTO oAuthConsumerAppDTO =
-                        oAuthAdminServiceStub.getOAuthApplicationData(clientId);
-                if (oAuthConsumerAppDTO != null) {
-                    String applicationName = oAuthConsumerAppDTO.getApplicationName();
-                    if (applicationName.endsWith(IdentityConstants.PRODUCTION)) {
-                        key = ServerIdentityRetriever.getCertificateByAlias(certAlias);
-                    } else if (applicationName.endsWith(IdentityConstants.SANDBOX)) {
-                        certAlias = IdentityConstants.SANDBOX_SIGNING_CERT_ALIAS;
-                        key = ServerIdentityRetriever.getCertificateByAlias(certAlias);
-                    } else {
-                        //Default is returned when the application name does not contains sandbox or production
-                        key = ServerIdentityRetriever.getPrimaryCertificate(IdentityConstants.CertificateType.SIGNING);
-                    }
-                    certificate = (X509Certificate) ServerIdentityRetriever.retrieveCertFromAlias(certAlias.get());
-
-                }
-            }
-        } catch (OAuthAdminServiceIdentityOAuthAdminException e) {
-            log.error("Error while trying to retrieve OauthAdminService.", e);
-        } catch (OpenBankingException e) {
-            log.error("Error while building the message context of token request.", e);
-        } catch (RemoteException e) {
-            log.error("Error while retrieving application data from OauthAdminStub. ", e);
-        } catch (KeyStoreException e) {
-            log.error("Error while retrieving signing certificate", e);
-        }
-
-        if (!key.isPresent()) {
-            log.warn("Server signing key for alias " + certAlias.get() + " is missing");
-            return StringUtils.EMPTY;
-        }
-
-        if (certificate != null) {
-            try {
-                headerBuilder.keyID(OAuth2Util.getKID(OAuth2Util.getThumbPrint(certificate, certAlias.get()),
-                        signAlgorithm));
-            } catch (IdentityOAuth2Exception e) {
-                throw new OpenBankingException("Unable to retrieve thumbprint of the certificate", e);
-            }
-        }
-
-        JWSObject jwsObject = new JWSObject(headerBuilder.build(), new Payload(payload));
-        try {
-            jwsObject.sign(new RSASSASigner((PrivateKey) key.get()));
-        } catch (JOSEException e) {
-            throw new OpenBankingException("Unable to sign JWT with signer", e);
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Converted JWT from JSON response of :" +
-                    payloadJsonObject.get("ConsentId") + "is " + jwsObject.serialize());
-        }
-
-        return jwsObject.serialize();
     }
 }

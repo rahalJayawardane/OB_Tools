@@ -10,20 +10,12 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.common.util;
+package org.ob.wso2.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.wso2.finance.open.banking.common.config.uk.UKSpecConfigParser;
-import com.wso2.finance.open.banking.common.util.RegexRedirectURIBuilder;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.cache.JwtJtiCache;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.cache.JwtJtiCacheKey;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.data.DynamicClientRegistrationDAO;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.exception.DynamicClientRegistrationException;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.OBSoftwareStatementPayload;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.ob.wso2.model.OBSoftwareStatementPayload;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,8 +30,6 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class CommonUtil {
 
-    private static JwtJtiCache jtiCache;
-    private static Log log = LogFactory.getLog(CommonUtil.class);
     private static ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -98,7 +88,7 @@ public class CommonUtil {
      * @return true if the uris are validated
      */
     public static boolean validateURIHostNames(List<String> redirectURIs, String logoURI, String clientURI,
-                                               String policyURI, String termOfServiceURI) {
+                                               String policyURI, String termOfServiceURI) throws IOException {
 
         String logoURIHost;
         String clientURIHost;
@@ -111,7 +101,7 @@ public class CommonUtil {
             termsOfServiceURIHost = new URI(termOfServiceURI).getHost();
             //check whether the hostnames of policy,logo,client and terms of service uris match with redirect uri
             //hostname if the validation is set to true
-            if (UKSpecConfigParser.getInstance().validateURIHostNameRequired()) {
+            if (CommonParser.getInstance().isValidateURIHostName()) {
                 for (String redirectURI : redirectURIs) {
                     //check whether the redirect uris and other given uris have same host name
                     String uriHost = new URI(redirectURI).getHost();
@@ -122,7 +112,7 @@ public class CommonUtil {
                 }
             }
         } catch (URISyntaxException e) {
-            log.error("Malformed redirect uri", e);
+            System.out.println("Malformed redirect uri: " + e);
             return false;
         }
         return true;
@@ -145,10 +135,10 @@ public class CommonUtil {
                     return false;
                 }
             } catch (MalformedURLException e) {
-                log.error("Malformed redirect uri", e);
+                System.out.println("Malformed redirect uri: " + e);
                 return false;
             } catch (IOException e) {
-                log.error("Error while connecting to the redirect uri", e);
+                System.out.println("Error while connecting to the redirect uri: " + e);
                 return false;
             } finally {
                 assert connection != null;
@@ -167,8 +157,8 @@ public class CommonUtil {
     public static String getResponseString(Object responseObject) {
         try {
             return mapper.writeValueAsString(responseObject);
-        } catch (JsonProcessingException e) {
-            log.error("Error occurred while creating the response string", e);
+        } catch (Exception e) {
+            System.out.println("Error occurred while creating the response string: " + e);
             return "{internal_server_error}";
         }
     }
@@ -185,76 +175,5 @@ public class CommonUtil {
         return new RegexRedirectURIBuilder()
                 .addURIList(callbackUris)
                 .build();
-    }
-
-    /**
-     * Check if an application with the given software id exists in the database.
-     *
-     * @param softwareStatementBody - Software statement body
-     * @return - Boolean
-     * @throws DynamicClientRegistrationException - DynamicClientRegistrationException
-     */
-    public static Boolean isApplicationExists(OBSoftwareStatementPayload softwareStatementBody)
-            throws DynamicClientRegistrationException {
-
-        DynamicClientRegistrationDAO dynamicClientRegistrationDAO = DCRUtil.getDynamicClientRegistrationDAOimpl();
-
-        //check if the application already exists in database
-        if (dynamicClientRegistrationDAO.isSoftwareIdExists(softwareStatementBody.getSoftwareId())) {
-            log.error(String.format("An active application with the software id %s already exists",
-                    softwareStatementBody.getSoftwareId()));
-            return true;
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("An active application with the software id %s doesn't exist",
-                        softwareStatementBody.getSoftwareId()));
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Check whether the given jti value is replayed.
-     *
-     * @param jtiValue - jti value
-     * @return
-     */
-    public static boolean isJTIReplayed(String jtiValue) {
-
-        // Validate JTI. Continue if jti is not present in cache
-        if (getJtiFromCache(jtiValue) != null) {
-            log.error(String.format("Rejected the replayed jti: %s", jtiValue));
-            return true;
-        }
-
-        // Add jti value to cache
-        JwtJtiCacheKey jtiCacheKey = JwtJtiCacheKey.from(jtiValue);
-        jtiCache.addToCache(jtiCacheKey, jtiValue);
-        return false;
-    }
-
-    /**
-     * Initialize JTI cache.
-     */
-    public static synchronized void initializeJTICache() {
-
-        if (jtiCache == null) {
-            log.debug("Creating New Cache");
-            jtiCache = new JwtJtiCache();
-        }
-        log.debug("Done Cache Initialization");
-    }
-
-    /**
-     * Try to retrieve the given jti value from cache.
-     *
-     * @param jtiValue - jti value
-     * @return
-     */
-    public static String getJtiFromCache(String jtiValue) {
-
-        initializeJTICache();
-        JwtJtiCacheKey cacheKey = JwtJtiCacheKey.from(jtiValue);
-        return jtiCache.getFromCache(cacheKey);
     }
 }

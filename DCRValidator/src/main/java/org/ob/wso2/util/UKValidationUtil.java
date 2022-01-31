@@ -10,17 +10,14 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.util;
+package org.ob.wso2.util;
 
-import com.wso2.finance.open.banking.common.config.uk.UKSpecConfigParser;
-import com.wso2.finance.open.banking.common.identity.utils.OBIdentityUtil;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.util.CertificateUtil;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.constants.UKValidationConstants;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model.UK320ClientRegistrationRequest;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model.UK320SoftwareStatementBody;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ob.wso2.constants.UKValidationConstants;
+import org.ob.wso2.model.UK320ClientRegistrationRequest;
+import org.ob.wso2.model.UK320SoftwareStatementBody;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -160,9 +157,9 @@ public class UKValidationUtil {
      *
      * @param authMethod the authentication method requested by the tpp
      */
-    public static boolean checkAuthMethod(String authMethod) {
+    public static boolean checkAuthMethod(String authMethod) throws IOException {
 
-        List<String> authMethods = UKSpecConfigParser.getInstance().getAuthenticationMethods();
+        List<String> authMethods = CommonParser.getInstance().getTokenAuthenticationMethods();
         for (String auth : authMethods) {
             if (auth.equals(authMethod)) {
                 return true;

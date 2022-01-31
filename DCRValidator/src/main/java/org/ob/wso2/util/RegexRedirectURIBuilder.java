@@ -10,9 +10,9 @@
  * with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.common.util;
+package org.ob.wso2.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

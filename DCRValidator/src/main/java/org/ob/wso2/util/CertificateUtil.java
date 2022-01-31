@@ -1,4 +1,5 @@
-package com.wso2.finance.open.banking.dynamic.client.registration.common.util;
+package org.ob.wso2.util;
+
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
@@ -6,8 +7,6 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jose.util.X509CertUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -26,12 +25,12 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
 /**
  * Utility methods related to X509 certificate operations.
  */
 public class CertificateUtil {
 
-    private static final Log log = LogFactory.getLog(CertificateUtil.class);
     private static final String HASH_ALGO = "SHA-1";
     private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     private static final String END_CERT = "-----END CERTIFICATE-----";
@@ -81,7 +80,7 @@ public class CertificateUtil {
         try {
             x5t = jwk.computeThumbprint(HASH_ALGO).toString();
         } catch (JOSEException e) {
-            log.error("Error while computing thumbprint", e);
+            System.out.println("Error while computing thumbprint: " + e);
         }
         return x5t;
     }
@@ -97,11 +96,11 @@ public class CertificateUtil {
         try {
             jwkSet = JWKSet.load(new URL(jwksUrl));
         } catch (MalformedURLException e) {
-            log.error("Malformed jwks uri", e);
+            System.out.println("Malformed jwks uri: " + e);
         } catch (ParseException e) {
-            log.error(String.format("A valid jwkSet could not be found in the given jwks url %s", jwksUrl));
+            System.out.println(String.format("A valid jwkSet could not be found in the given jwks url %s", jwksUrl));
         } catch (IOException e) {
-            log.error("Error while loading the jwk set", e);
+            System.out.println("Error while loading the jwk set: " + e);
         }
         return jwkSet;
     }
@@ -186,7 +185,7 @@ public class CertificateUtil {
             url = new URL(key.getX509CertURL().toString());
             urlConnection = url.openConnection();
         } catch (IOException e) {
-            log.error("Error occurred while trying to retrieve the transport certificate from jwks endpoint.", e);
+            System.out.println("Error occurred while trying to retrieve the transport certificate from jwks endpoint: " + e);
             return certificate;
         }
 
@@ -202,9 +201,9 @@ public class CertificateUtil {
             certificate = (X509Certificate) CertificateFactory.getInstance(X509)
                     .generateCertificate(new ByteArrayInputStream(decoded));
         } catch (IOException e) {
-            log.error("Exception occurred while trying to retrieve certificate for  token binding. ", e);
+            System.out.println("Exception occurred while trying to retrieve certificate for  token binding: " + e);
         } catch (java.security.cert.CertificateException e) {
-            log.error("Error occurred while creating X50nCertificate object. ", e);
+            System.out.println("Error occurred while creating X50nCertificate object: " + e);
         }
         return certificate;
     }

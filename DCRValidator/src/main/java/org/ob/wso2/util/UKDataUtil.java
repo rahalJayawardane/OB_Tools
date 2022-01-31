@@ -10,18 +10,16 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.util;
+package org.ob.wso2.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.wso2.finance.open.banking.common.exception.OpenBankingException;
-import com.wso2.finance.open.banking.common.util.JWTUtils;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.exception.DynamicClientRegistrationException;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model.UK320ClientRegistrationRequest;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model.UK320SoftwareStatementBody;
+import groovy.json.internal.Exceptions;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ob.wso2.model.UK320ClientRegistrationRequest;
+import org.ob.wso2.model.UK320SoftwareStatementBody;
 
 import java.util.Optional;
 
@@ -29,10 +27,8 @@ import java.util.Optional;
  * Util class for UK v3.2 data handling.
  */
 public class UKDataUtil {
-    private static final Log log = LogFactory.getLog(UKDataUtil.class);
-
-    public static UK320SoftwareStatementBody getSoftwareStatementPayloadFromRequest(
-            UK320ClientRegistrationRequest registrationRequest) throws DynamicClientRegistrationException {
+     public static UK320SoftwareStatementBody getSoftwareStatementPayloadFromRequest(
+            UK320ClientRegistrationRequest registrationRequest) throws Exception {
 
         Gson gson = new GsonBuilder().create();
         Optional<UK320SoftwareStatementBody> softwareStatementBody = Optional.empty();
@@ -45,10 +41,10 @@ public class UKDataUtil {
             //map SSA body to the UK320SoftwareStatementBody model
             softwareStatementBody = Optional.ofNullable(gson.fromJson(decodedSoftwareStatementBody.toString()
                     , UK320SoftwareStatementBody.class));
-        } catch (OpenBankingException e) {
-            log.error(String.format("Error occurred while decoding the provided SSA : %s", e));
+        } catch (Exception e) {
+            System.out.println(String.format("Error occurred while decoding the provided SSA : %s", e));
         }
-        return softwareStatementBody.orElseThrow(() -> new DynamicClientRegistrationException(
+        return softwareStatementBody.orElseThrow(() -> new Exceptions.JsonInternalException(
                 "Malformed or unsupported SSA"));
     }
 }

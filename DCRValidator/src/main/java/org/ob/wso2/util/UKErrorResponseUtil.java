@@ -10,10 +10,11 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.util;
+package org.ob.wso2.util;
 
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.OBRegistrationSetupResponse;
-import com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model.UK320RegistrationError;
+
+import org.ob.wso2.model.OBRegistrationSetupResponse;
+import org.ob.wso2.model.UK320RegistrationError;
 
 /**
  * UK specific error response util class.
