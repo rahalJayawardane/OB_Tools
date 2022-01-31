@@ -10,9 +10,7 @@
  * with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.common.identity;
-
-import com.wso2.finance.open.banking.common.config.CommonConfigParser;
+package org.ob.wso2.constants;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -89,42 +87,6 @@ public class IdentityConstants {
         useMap.put(CertificateType.TRANSPORT, new String[]{"enc", "tls"});
 
         USE_TYPE_VALUE_MAP = Collections.unmodifiableMap(useMap);
-    }
-
-    /**
-     * Custom Configurations.
-     * defines and loads custom configurations from xml.
-     */
-    public static final Optional<String> PRIMARY_SIGNING_CERT_ALIAS;
-    public static final Optional<String> SANDBOX_SIGNING_CERT_ALIAS;
-    public static final Optional<String> PRIMARY_SIGNING_CERT_KID;
-    public static final Optional<String> SANDBOX_SIGNING_CERT_KID;
-
-    static {
-
-        PRIMARY_SIGNING_CERT_ALIAS = Optional
-                .ofNullable(CommonConfigParser.getInstance().getOBIdnRetrieverSigningCertificateAlias());
-        SANDBOX_SIGNING_CERT_ALIAS = Optional
-                .ofNullable(CommonConfigParser.getInstance().getOBIdnRetrieverSandboxSigningCertificateAlias());
-        PRIMARY_SIGNING_CERT_KID = Optional
-                .ofNullable(CommonConfigParser.getInstance().getOBIdnRetrieverSigningCertificateKid());
-        SANDBOX_SIGNING_CERT_KID = Optional
-                .ofNullable(CommonConfigParser.getInstance().getOBIdnRetrieverSandboxCertificateKid());
-    }
-
-    /**
-     * Base Cache configuration.
-     * loaded from configuration.
-     */
-    public static final int CACHE_EXPIRY_MODIFIED_DURATION;
-    public static final int CACHE_EXPIRY_ACCESSED_DURATION;
-
-    static {
-
-        CACHE_EXPIRY_MODIFIED_DURATION =
-                CommonConfigParser.getInstance().getOBIdnRetrieverCacheModifiedExpiryDuration();
-        CACHE_EXPIRY_ACCESSED_DURATION =
-                CommonConfigParser.getInstance().getOBIdnRetrieverCacheAccessedExpiryDuration();
     }
 
 

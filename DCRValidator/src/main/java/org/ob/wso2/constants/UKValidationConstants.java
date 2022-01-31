@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.constants;
+package org.ob.wso2.constants;
 
 /**
  * Field names used for AU specific validations.
