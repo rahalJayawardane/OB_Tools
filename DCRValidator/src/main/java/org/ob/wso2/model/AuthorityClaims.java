@@ -9,7 +9,7 @@
  * please see the license as well as any agreement you’ve entered into with
  * WSO2 governing the purchase of this software and any associated services.
  */
-package com.wso2.finance.open.banking.dynamic.client.registration.common.model;
+package org.ob.wso2.model;
 
 import com.google.gson.annotations.SerializedName;
 

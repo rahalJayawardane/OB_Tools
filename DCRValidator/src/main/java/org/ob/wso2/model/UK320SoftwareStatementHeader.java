@@ -11,7 +11,7 @@
  *
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model;
+package org.ob.wso2.model;
 
 /**
  * UK320SoftwareStatementHeader class.

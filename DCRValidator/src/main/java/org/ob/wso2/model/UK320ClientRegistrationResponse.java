@@ -11,11 +11,10 @@
  *
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model;
+package org.ob.wso2.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.OBClientRegistrationResponse;
 
 import java.util.ArrayList;
 import java.util.List;

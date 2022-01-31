@@ -10,11 +10,10 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model;
+package org.ob.wso2.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.OBRegistrationError;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

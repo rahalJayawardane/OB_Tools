@@ -10,12 +10,10 @@
  * with WSO2 governing the purchase of this software and any associated services.
  *
  */
-package com.wso2.finance.open.banking.dynamic.client.registration.mgt.uk.model;
+package org.ob.wso2.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.Contact;
-import com.wso2.finance.open.banking.dynamic.client.registration.common.model.OBSoftwareStatementPayload;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
