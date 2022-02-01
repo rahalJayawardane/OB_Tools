@@ -147,6 +147,8 @@ public class UKValidationUtil {
         } catch (IOException e) {
             log.error("Error occurred while trying to retrieve the certificate from the jwks endpoint", e);
             return false;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         log.debug("Validated the TLS certificate sent by the TPP successfully");
         return true;

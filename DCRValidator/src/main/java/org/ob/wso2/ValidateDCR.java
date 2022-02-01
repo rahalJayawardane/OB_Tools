@@ -10,21 +10,43 @@ import org.ob.wso2.model.UK320ClientRegistrationRequest;
 import org.ob.wso2.model.UK320RegistrationError;
 import org.ob.wso2.model.UK320SoftwareStatementBody;
 import org.ob.wso2.model.UK320SoftwareStatementHeader;
+import org.ob.wso2.util.CommonParser;
 import org.ob.wso2.util.CommonUtil;
 import org.ob.wso2.util.JWTUtils;
 import org.ob.wso2.util.UKErrorResponseUtil;
 import org.ob.wso2.util.UKValidationUtil;
 import org.ob.wso2.validator.UK320RegistrationRequestValidator;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class ValidateDCR {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+
+
+        if (args.length != 1) {
+            System.out.println("Please input config file location");
+            System.exit(0);
+        }
+
+        String configFile = args[0];
+
+        CommonParser parser = CommonParser.getInstance();
+        parser.readConfigFile(configFile);
+        System.setProperty("javax.net.ssl.trustStore", parser.getTrustStore());
+        System.setProperty("javax.net.ssl.trustStorePassword", parser.getTrustStorePassword());
+        handleDCRPost(readFile(parser.getTppTLS()), parser.getTppJWT());
 
     }
 
-    public OBRegistrationSetupResponse handleDCRPost(String tlsCertificate, String requestBody) throws Exception{
+    private static OBRegistrationSetupResponse handleDCRPost(String tlsCertificate, String requestBody) throws Exception{
 
         if (StringUtils.isBlank(requestBody)) {
             throw new Exception("A valid jwt is not found with the request");
@@ -116,5 +138,21 @@ public class ValidateDCR {
         }
         // TODO: correct reponse
         return null;
+    }
+
+    public static String readFile(String fileName) throws Exception {
+
+        InputStream inputStream = new FileInputStream(fileName);
+
+        if (inputStream != null) {
+            BufferedInputStream bufferInput = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream bufferOutput = new ByteArrayOutputStream();
+            for (int result = bufferInput.read(); result != -1; result = bufferInput.read()) {
+                bufferOutput.write((byte) result);
+            }
+            return bufferOutput.toString("UTF-8");
+        } else {
+            throw new FileNotFoundException(fileName + " not found in the classpath");
+        }
     }
 }

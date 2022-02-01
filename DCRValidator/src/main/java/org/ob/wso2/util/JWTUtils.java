@@ -35,6 +35,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +43,7 @@ import java.rmi.RemoteException;
 import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.Map;
@@ -71,22 +73,21 @@ public class JWTUtils {
      */
     public static JSONObject decodeRequestJWT(String jwtToken, JwtPart jwtPart)
             throws Exception {
-        Optional<JSONObject> jsonObject = Optional.empty();
+        JSONObject jsonObject = new JSONObject();
 
         try {
             JWSObject plainObject = JWSObject.parse(jwtToken);
 
             if (JwtPart.header.equals(jwtPart)) {
-                jsonObject = Optional.ofNullable(plainObject.getHeader().toJSONObject());
+                jsonObject = plainObject.getHeader().toJSONObject();
             } else if (JwtPart.body.equals(jwtPart)) {
-                jsonObject = Optional.ofNullable(plainObject.getPayload().toJSONObject());
+                jsonObject = plainObject.getPayload().toJSONObject();
             }
         } catch (ParseException e) {
             log.error("Error occurred while parsing the jwt token");
             throw new Exception("Error occurred while parsing the jwt token", e);
         }
-        return jsonObject.orElseThrow(() -> new Exceptions.JsonInternalException(
-                "Error occurred while parsing the jwt token"));
+        return jsonObject;
     }
 
     /**
@@ -103,6 +104,7 @@ public class JWTUtils {
 
         int defaultConnectionTimeout = 3000;
         int defaultReadTimeout = 3000;
+        Security.addProvider(new BouncyCastleProvider());
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
         JWT jwt = JWTParser.parse(jwtString);
         // set the Key Selector for the jwks_uri.

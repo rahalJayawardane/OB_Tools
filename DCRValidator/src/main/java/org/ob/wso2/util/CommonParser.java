@@ -16,18 +16,13 @@ public class CommonParser {
     private int readTimeout;
     private String dcrProduction;
     private String dcrSandbox;
+    private String tppJWT;
+    private String tppTLS;
+    private String trustStore;
+    private String trustStorePassword;
     private boolean validateURI;
     private boolean ValidateURIHostName;
     private List<String> TokenAuthenticationMethods;
-
-    public CommonParser() {
-
-    }
-
-    public CommonParser(String fileName) throws IOException {
-
-        setProperties(readConfigFile(fileName));
-    }
 
     public static CommonParser getInstance() throws IOException {
 
@@ -45,15 +40,19 @@ public class CommonParser {
         setValidateURIHostName(Boolean.parseBoolean(prop.getProperty("ValidateURIHostName")));
         String AuthenticationMethods = prop.getProperty("TokenAuthenticationMethods");
         setTokenAuthenticationMethods(Arrays.asList(AuthenticationMethods.split(",")));
+        setTppJWT(prop.getProperty("TPP_JWT"));
+        setTppTLS(prop.getProperty("TPP_TLS"));
+        setTrustStore(prop.getProperty("client_trustStore"));
+        setTrustStorePassword(prop.getProperty("trustStore_password"));
     }
 
-    private Properties readConfigFile(String fileName) throws IOException {
+    public void readConfigFile(String fileName) throws IOException {
 
         try {
             Properties prop = new Properties();
             inputStream = new FileInputStream(fileName);
             prop.load(inputStream);
-            return prop;
+            setProperties(prop);
         } catch (Exception e) {
             throw new FileNotFoundException(fileName + "' is not a correct property file");
         } finally {
@@ -129,5 +128,45 @@ public class CommonParser {
     public void setTokenAuthenticationMethods(List<String> tokenAuthenticationMethods) {
 
         TokenAuthenticationMethods = tokenAuthenticationMethods;
+    }
+
+    public String getTppJWT() {
+
+        return tppJWT;
+    }
+
+    public void setTppJWT(String tppJWT) {
+
+        this.tppJWT = tppJWT;
+    }
+
+    public String getTppTLS() {
+
+        return tppTLS;
+    }
+
+    public void setTppTLS(String tppTLS) {
+
+        this.tppTLS = tppTLS;
+    }
+
+    public String getTrustStore() {
+
+        return trustStore;
+    }
+
+    public void setTrustStore(String trustStore) {
+
+        this.trustStore = trustStore;
+    }
+
+    public String getTrustStorePassword() {
+
+        return trustStorePassword;
+    }
+
+    public void setTrustStorePassword(String trustStorePassword) {
+
+        this.trustStorePassword = trustStorePassword;
     }
 }

@@ -19,6 +19,7 @@ import org.ob.wso2.constants.IdentityConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -53,22 +54,12 @@ public class OBIdentityUtil {
     /**
      * Return Certificate for give Certificate Content.
      *
-     * @param content Certificate Content
+     * @param certificate Certificate Content
      * @return X509Certificate
      * @throws CertificateException
      */
-    public static X509Certificate parseCertificate(String content) throws CertificateException {
-
-        // Trim extra spaces
-        String decodedContent = content.trim();
-
-        // Remove Certificate Headers
-        byte[] decoded = Base64.getDecoder().decode(decodedContent
-                        .replaceAll(IdentityConstants.BEGIN_CERT, StringUtils.EMPTY)
-                        .replaceAll(IdentityConstants.END_CERT, StringUtils.EMPTY).trim()
-                                                   );
-
-        return (X509Certificate) CertificateFactory.getInstance("X.509")
-                .generateCertificate(new ByteArrayInputStream(decoded));
+    public static X509Certificate parseCertificate(String certificate) throws Exception{
+        InputStream targetStream = new ByteArrayInputStream(certificate.getBytes());
+        return (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(targetStream);
     }
 }
