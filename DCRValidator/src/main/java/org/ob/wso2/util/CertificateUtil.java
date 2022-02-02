@@ -96,11 +96,11 @@ public class CertificateUtil {
         try {
             jwkSet = JWKSet.load(new URL(jwksUrl));
         } catch (MalformedURLException e) {
-            System.out.println("Malformed jwks uri: " + e);
+            System.out.println("ERROR: Malformed jwks uri: " + e);
         } catch (ParseException e) {
-            System.out.println(String.format("A valid jwkSet could not be found in the given jwks url %s", jwksUrl));
+            System.out.println(String.format("ERROR: A valid jwkSet could not be found in the given jwks url %s", jwksUrl));
         } catch (IOException e) {
-            System.out.println("Error while loading the jwk set: " + e);
+            System.out.println("ERROR: Error while loading the jwk set: " + e);
         }
         return jwkSet;
     }

@@ -30,7 +30,6 @@ import java.util.List;
  * UK spec specific validations.
  */
 public class UKValidationUtil {
-    private static final Log log = LogFactory.getLog(UKValidationUtil.class);
 
     /**
      * List of allowed scopes in UK specification.
@@ -132,25 +131,22 @@ public class UKValidationUtil {
      */
     public static boolean validateTlsCertificate(String tlsCerificateString, String jwksEndpoint) {
 
-        log.debug("Validating the TLS certificate sent by the TPP..");
-        //check whether the certificate sent by the tpp is signed by a CA listed in the JWKS end point
         try {
             X509Certificate tlsCertificate = OBIdentityUtil.parseCertificate(tlsCerificateString);
             if (!CertificateUtil.verifyCertChain(jwksEndpoint, tlsCertificate)) {
-                log.error("TLS certificate sent by the TPP is not signed by the CA listed in the provided " +
+                System.out.println("ERROR: TLS certificate sent by the TPP is not signed by the CA listed in the provided " +
                         "JWKS endpoint");
                 return false;
             }
         } catch (CertificateException  e) {
-            log.error("Error occurred while validating the TPP sent TLS certificate");
+            System.out.println("ERROR: Error occurred while validating the TPP sent TLS certificate");
             return false;
         } catch (IOException e) {
-            log.error("Error occurred while trying to retrieve the certificate from the jwks endpoint", e);
+            System.out.println("ERROR: Error occurred while trying to retrieve the certificate from the jwks endpoint: " + e);
             return false;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        log.debug("Validated the TLS certificate sent by the TPP successfully");
         return true;
     }
 

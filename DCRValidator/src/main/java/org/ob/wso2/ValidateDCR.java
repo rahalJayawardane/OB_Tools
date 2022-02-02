@@ -29,8 +29,6 @@ public class ValidateDCR {
 
     public static void main(String[] args) throws Exception {
 
-
-
         if (args.length != 1) {
             System.out.println("Please input config file location");
             System.exit(0);
@@ -42,14 +40,16 @@ public class ValidateDCR {
         parser.readConfigFile(configFile);
         System.setProperty("javax.net.ssl.trustStore", parser.getTrustStore());
         System.setProperty("javax.net.ssl.trustStorePassword", parser.getTrustStorePassword());
-        handleDCRPost(readFile(parser.getTppTLS()), parser.getTppJWT());
+        OBRegistrationSetupResponse response = handleDCRPost(readFile(parser.getTppTLS()), parser.getTppJWT());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        System.out.println(gson.toJson(response));
 
     }
 
     private static OBRegistrationSetupResponse handleDCRPost(String tlsCertificate, String requestBody) throws Exception{
 
         if (StringUtils.isBlank(requestBody)) {
-            throw new Exception("A valid jwt is not found with the request");
+            throw new Exception("ERROR: A valid jwt is not found in the config file");
         }
 
         //decode request jwt
@@ -57,7 +57,7 @@ public class ValidateDCR {
         try {
             decodedRequest = JWTUtils.decodeRequestJWT(requestBody, JWTUtils.JwtPart.body);
         } catch (Exception e) {
-            System.out.println("Error occurred while decoding the provided jwt: " + e);
+            System.out.println("ERROR: Error occurred while decoding the provided jwt: " + e);
             return UKErrorResponseUtil.getInvalidJWTResponse();
         }
 
@@ -67,11 +67,11 @@ public class ValidateDCR {
         try {
             registrationRequest = gson.fromJson(decodedRequest.toString(), UK320ClientRegistrationRequest.class);
             if (registrationRequest == null) {
-                System.out.println("Request payload cannot be mapped to the specification supported format");
+                System.out.println("ERROR: Request payload cannot be mapped to the specification supported format");
                 return UKErrorResponseUtil.getMalformedRequestBodyResponse();
             }
         } catch (Exception e) {
-            System.out.println(String.format("Error occurred while mapping the provided jwt"));
+            System.out.println(String.format("ERROR: Error occurred while mapping the provided jwt"));
             return UKErrorResponseUtil.getMalformedRequestBodyResponse();
         }
 
@@ -96,7 +96,7 @@ public class ValidateDCR {
             decodedSoftwareStatementHeader = JWTUtils.decodeRequestJWT(registrationRequest.
                     getSoftwareStatementPayload(), JWTUtils.JwtPart.header);
         } catch (Exception e) {
-            System.out.println(String.format("Error occurred while decoding the provided SSA : %s", e));
+            System.out.println(String.format("ERROR: Error occurred while decoding the provided SSA : %s", e));
             return UKErrorResponseUtil.getInvalidSSAResponse();
         }
 
@@ -109,11 +109,11 @@ public class ValidateDCR {
             softwareStatementBody = gson.fromJson(decodedSoftwareStatementBody.toString()
                     , UK320SoftwareStatementBody.class);
             if (softwareStatementBody == null || softwareStatementHeader == null) {
-                System.out.println("SSA cannot be mapped to the specification supported format");
+                System.out.println("ERROR: SSA cannot be mapped to the specification supported format");
                 return UKErrorResponseUtil.getInvalidSSAResponse();
             }
         } catch (Exception e) {
-            System.out.println(String.format("Error occurred while mapping the provided software statement : %s", e));
+            System.out.println(String.format("ERROR: Error occurred while mapping the provided software statement : %s", e));
             return UKErrorResponseUtil.getMalformedRequestBodyResponse();
         }
 
@@ -122,7 +122,7 @@ public class ValidateDCR {
         isValidCert = UKValidationUtil.validateTlsCertificate(tlsCertificate,
                 softwareStatementBody.getSoftwareJwksEndpoint());
         if (!isValidCert) {
-            System.out.println("Failed to validate the TLS certificate");
+            System.out.println("ERROR: Failed to validate the TLS certificate");
             return UKErrorResponseUtil.getInvalidTlsCertResponse();
         }
 
@@ -130,14 +130,16 @@ public class ValidateDCR {
         UK320RegistrationError validationError = UK320RegistrationRequestValidator.validateRegistrationPayload(
                 requestBody, registrationRequest, softwareStatementHeader, softwareStatementBody);
         if (validationError.getCode() != null) {
+            System.out.println("SSA validation failed");
             System.out.println(String.format(
                     "%s: %s", ErrorConstants.PAYLOAD_VALIDATION_FAILED, gson.toJson(validationError)));
             String responseString = CommonUtil.getResponseString(validationError);
             return new OBRegistrationSetupResponse(OBRegistrationSetupResponse.ResponseStatusEnum
                     .BAD_REQUEST.getCode(), responseString);
         }
-        // TODO: correct reponse
-        return null;
+
+        return new OBRegistrationSetupResponse(OBRegistrationSetupResponse.ResponseStatusEnum.OK.getCode(),
+                "JWT Request with SSA is valid");
     }
 
     public static String readFile(String fileName) throws Exception {
