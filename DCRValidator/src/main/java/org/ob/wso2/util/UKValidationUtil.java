@@ -139,7 +139,7 @@ public class UKValidationUtil {
                 return false;
             }
         } catch (CertificateException  e) {
-            System.out.println("ERROR: Error occurred while validating the TPP sent TLS certificate");
+            System.out.println("ERROR: Error occurred while validating the TPP sent TLS certificate: " + e);
             return false;
         } catch (IOException e) {
             System.out.println("ERROR: Error occurred while trying to retrieve the certificate from the jwks endpoint: " + e);

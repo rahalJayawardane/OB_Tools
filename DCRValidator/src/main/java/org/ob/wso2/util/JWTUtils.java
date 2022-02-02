@@ -60,8 +60,6 @@ public class JWTUtils {
     public enum JwtPart {
         header, body
     }
-
-    private static Log log = LogFactory.getLog(JWTUtils.class);
     private static final JWSAlgorithm DEFAULT_ALGORITHM = JWSAlgorithm.PS256;
 
     /**
@@ -84,7 +82,6 @@ public class JWTUtils {
                 jsonObject = plainObject.getPayload().toJSONObject();
             }
         } catch (ParseException e) {
-            log.error("Error occurred while parsing the jwt token");
             throw new Exception("Error occurred while parsing the jwt token", e);
         }
         return jsonObject;

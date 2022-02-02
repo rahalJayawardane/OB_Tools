@@ -130,7 +130,6 @@ public class ValidateDCR {
         UK320RegistrationError validationError = UK320RegistrationRequestValidator.validateRegistrationPayload(
                 requestBody, registrationRequest, softwareStatementHeader, softwareStatementBody);
         if (validationError.getCode() != null) {
-            System.out.println("SSA validation failed");
             System.out.println(String.format(
                     "%s: %s", ErrorConstants.PAYLOAD_VALIDATION_FAILED, gson.toJson(validationError)));
             String responseString = CommonUtil.getResponseString(validationError);
