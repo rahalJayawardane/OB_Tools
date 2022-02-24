@@ -30,6 +30,7 @@ public class ConfigFileReader {
             properties.setOrganizationIdentifier(prop.getProperty("organizationIdentifier"));
             properties.setCommonName(prop.getProperty("commonName"));
             properties.setEmailAddress(prop.getProperty("emailAddress"));
+            properties.setObCerts(Boolean.parseBoolean(prop.getProperty("OB_Certs")));
 
             //Roles
             properties.setPSP_AI(Boolean.parseBoolean(prop.getProperty("PSP_AI")));

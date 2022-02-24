@@ -23,6 +23,7 @@ public class PropertyFile {
     private String organizationIdentifier;
     private String commonName;
     private String emailAddress;
+    private boolean obCerts;
 
     //CA Details
     private String ca_country;
@@ -37,6 +38,16 @@ public class PropertyFile {
     private boolean PSP_PI;
     private boolean PSP_AI;
     private boolean PSP_IC;
+
+    public boolean isObCerts() {
+
+        return obCerts;
+    }
+
+    public void setObCerts(boolean obCerts) {
+
+        this.obCerts = obCerts;
+    }
 
     public String getOutputLocation() {
 
