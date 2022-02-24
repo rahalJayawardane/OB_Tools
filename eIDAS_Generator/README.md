@@ -11,9 +11,11 @@ Download the following files first.
 - config.properties
 
 Open the `config.properties` file and change the configuration as you wish.
+
 | Config | Description |
 | ------ | ------ |
 | createCA | True, if you want to create a CA and sign CSR using it  |
+| OB_Certs | True, if you want to create OBWAC and OBSEAL  |
 | ca_* | CA details to create self-signed certificate |
 | organizationName | TPP's Organization Name |
 | organizationIdentifier | TPP's Organization ID |
