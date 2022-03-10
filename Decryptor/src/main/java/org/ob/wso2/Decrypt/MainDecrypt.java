@@ -92,26 +92,26 @@ public class MainDecrypt {
         return privateKey;
     }
 //
-//    public static String encryptPlainText(String plainText) throws Exception {
-//        Security.addProvider(new BouncyCastleProvider());
-//        String cipherTransformation = "RSA/ECB/OAEPwithSHA1andMGF1Padding";
-//        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPwithSHA1andMGF1Padding","BC");
-//        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-//        byte[] encryptedByte = cipher.doFinal(plainText.getBytes());
-////        return Base64.encode(encryptedByte);
-//        return null;
-////
-////        try {
-////            byte[] encryptedKey = cipher.doFinal((plainText.getBytes()));
-////            return Base64.encode(encryptedKey);
-////        } catch (GeneralSecurityException e) {
-////            String errMsg = "Failed to generate the cipher text";
-////            throw new Exception(errMsg, e);
-////        } catch (ArrayIndexOutOfBoundsException e) {
-////            System.out.println("Error while adding the password - too much data for RSA block");
-////            throw e;
-////        }
-//    }
+    public static String encryptPlainText(String plainText) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
+        String cipherTransformation = "RSA/ECB/OAEPwithSHA1andMGF1Padding";
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPwithSHA1andMGF1Padding","BC");
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+        byte[] encryptedByte = cipher.doFinal(plainText.getBytes());
+//        return Base64.encode(encryptedByte);
+        return null;
+//
+//        try {
+//            byte[] encryptedKey = cipher.doFinal((plainText.getBytes()));
+//            return Base64.encode(encryptedKey);
+//        } catch (GeneralSecurityException e) {
+//            String errMsg = "Failed to generate the cipher text";
+//            throw new Exception(errMsg, e);
+//        } catch (ArrayIndexOutOfBoundsException e) {
+//            System.out.println("Error while adding the password - too much data for RSA block");
+//            throw e;
+//        }
+    }
 
 
 }
