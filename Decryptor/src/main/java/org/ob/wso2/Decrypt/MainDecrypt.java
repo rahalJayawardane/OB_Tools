@@ -63,43 +63,8 @@ public class MainDecrypt {
         }
         return privateKey;
     }
-//
-    public static String encryptPlainText(String plainText) throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
-        String cipherTransformation = "RSA/ECB/OAEPwithSHA1andMGF1Padding";
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPwithSHA1andMGF1Padding","BC");
-        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-        byte[] encryptedByte = cipher.doFinal(plainText.getBytes());
-//        return Base64.encode(encryptedByte);
-        return null;
-//
-//        try {
-//            byte[] encryptedKey = cipher.doFinal((plainText.getBytes()));
-//            return Base64.encode(encryptedKey);
-//        } catch (GeneralSecurityException e) {
-//            String errMsg = "Failed to generate the cipher text";
-//            throw new Exception(errMsg, e);
-//        } catch (ArrayIndexOutOfBoundsException e) {
-//            System.out.println("Error while adding the password - too much data for RSA block");
-//            throw e;
-//        }
-    }
 
-    public static byte[] encrypt(PrivateKey key, byte[] plaintext) throws Exception
-    {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        return cipher.doFinal(plaintext);
-    }
-
-    public static byte[] decrypt(PublicKey key, byte[] ciphertext) throws Exception
-    {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        return cipher.doFinal(ciphertext);
-    }
-
-    private static byte[] generateEncryptedData(String data) throws Exception {
+   private static byte[] generateEncryptedData(String data) throws Exception {
         Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPwithSHA1andMGF1Padding");
         rsa.init(Cipher.ENCRYPT_MODE, publicKey);
 
