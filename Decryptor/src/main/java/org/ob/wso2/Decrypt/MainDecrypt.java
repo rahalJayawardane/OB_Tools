@@ -1,30 +1,17 @@
 package org.ob.wso2.Decrypt;
 
-
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.io.StringWriter;
-import java.security.cert.X509Certificate;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.cert.Certificate;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-
-import org.apache.axiom.util.base64.Base64Utils;
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 
 public class MainDecrypt {
 
