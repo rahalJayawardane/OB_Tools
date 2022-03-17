@@ -22,14 +22,22 @@ public class MainDecrypt {
 
         String password = args[0];
         String file = args[1];
-        String encryptedTextKey = args[2];
+        boolean base64Encoded = true;
+        String encryptedTextKey = args[3];
         getKeysFromKeyStore(file, password);
+        if (base64Encoded) {
+            encryptedTextKey = decode64(encryptedTextKey);
+        }
+        String generateDecryptedData = generateDecryptedData(encryptedTextKey.getBytes(StandardCharsets.UTF_8));
+        System.out.println(generateDecryptedData);
+    }
+
+    private static String decode64(String encryptedTextKey) {
+
         byte[] decodeCipher = Base64.getDecoder().decode(encryptedTextKey.getBytes(StandardCharsets.UTF_8));
         JSONObject json = new JSONObject(new String(decodeCipher));
-        String cipher = json.getString("c");
+        return json.getString("c");
 
-        String generateDecryptedData = generateDecryptedData(cipher.getBytes(StandardCharsets.UTF_8));
-        System.out.println(generateDecryptedData);
     }
 
     private static PrivateKey getKeysFromKeyStore(String keyStoreFilePath, String keyStorePassword) throws Exception {
