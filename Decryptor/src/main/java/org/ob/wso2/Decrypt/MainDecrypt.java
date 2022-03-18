@@ -22,7 +22,7 @@ public class MainDecrypt {
 
         String password = args[0];
         String file = args[1];
-        boolean base64Encoded = true;
+        boolean base64Encoded = Boolean.parseBoolean(args[2]);
         String encryptedTextKey = args[3];
         getKeysFromKeyStore(file, password);
         if (base64Encoded) {
