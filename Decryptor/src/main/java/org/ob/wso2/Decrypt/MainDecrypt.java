@@ -11,6 +11,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 
 public class MainDecrypt {
@@ -20,24 +22,34 @@ public class MainDecrypt {
 
     public static void main(String[] args) throws Exception {
 
-        String password = args[0];
-        String file = args[1];
-        boolean base64Encoded = Boolean.parseBoolean(args[2]);
-        String encryptedTextKey = args[3];
+        String file = args[0];
+        String password = args[1];
+        String encryptedTextKey = args[2];
         getKeysFromKeyStore(file, password);
-        if (base64Encoded) {
+        if (checkForEncode(encryptedTextKey)) {
             encryptedTextKey = decode64(encryptedTextKey);
         }
         String generateDecryptedData = generateDecryptedData(encryptedTextKey.getBytes(StandardCharsets.UTF_8));
-        System.out.println(generateDecryptedData);
+        System.out.println("Decrypted Value: " + generateDecryptedData);
     }
 
-    private static String decode64(String encryptedTextKey) {
+    private static String decode64(String encryptedTextKey) throws Exception{
 
         byte[] decodeCipher = Base64.getDecoder().decode(encryptedTextKey.getBytes(StandardCharsets.UTF_8));
-        JSONObject json = new JSONObject(new String(decodeCipher));
-        return json.getString("c");
+        try {
+            JSONObject json = new JSONObject(new String(decodeCipher));
+            return json.getString("c");
+        } catch (Exception e) {
+            throw new Exception("Encrypted value is not in Base64 JSON format. Please check again...");
+        }
 
+    }
+
+    public static boolean checkForEncode(String string) {
+        String pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(string);
+        return m.find();
     }
 
     private static PrivateKey getKeysFromKeyStore(String keyStoreFilePath, String keyStorePassword) throws Exception {
@@ -53,7 +65,6 @@ public class MainDecrypt {
                 KeyPair keyPair = new KeyPair(publicKey, (PrivateKey) key);
                 privateKey = keyPair.getPrivate();
             }
-            //privateKeyEncoded = encoder.encode(privateKey.getEncoded());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
