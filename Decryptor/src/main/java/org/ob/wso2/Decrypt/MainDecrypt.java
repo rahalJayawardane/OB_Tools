@@ -22,13 +22,20 @@ public class MainDecrypt {
 
     public static void main(String[] args) throws Exception {
 
+        if (args.length != 3) {
+            System.out.println("ERROR: Invalid number of inputs. Please refer to the README.md file");
+            System.exit(0);
+        }
+
         String file = args[0];
         String password = args[1];
         String encryptedTextKey = args[2];
+
         getKeysFromKeyStore(file, password);
         if (checkForEncode(encryptedTextKey)) {
             encryptedTextKey = decode64(encryptedTextKey);
         }
+        System.out.println(new String(generateEncryptedData("wso2carbon")));
         String generateDecryptedData = generateDecryptedData(encryptedTextKey.getBytes(StandardCharsets.UTF_8));
         System.out.println("Decrypted Value: " + generateDecryptedData);
     }
